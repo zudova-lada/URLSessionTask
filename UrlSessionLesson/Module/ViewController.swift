@@ -44,7 +44,7 @@ class ViewController: UIViewController {
 
 	}
 
-    private func search() {
+    @objc private func search() {
         interactor.loadImageList(by: searchString) { [weak self] models in
             self?.localModels.append(contentsOf: models)
             let model = ImageViewModel(description: "", image: nil)
@@ -119,36 +119,13 @@ extension ViewController: UITableViewDataSource {
 
     extension ViewController: UISearchBarDelegate
     {
-        func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-            searchActive = true;
-        }
-        
-        func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-            searchActive = false;
-        }
-        
-        func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-            searchActive = false;
-        }
-        
-        func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-            searchActive = false;
-            
-        }
-        
         func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
             searchString = searchText
-            if  searchText != "" {
-                
-                if searchActive {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-                        self.search()
-                    }
-                }
-                searchActive = false;
-            } else {
-                searchActive = true;
-            }
+            
+            NSObject.cancelPreviousPerformRequests(withTarget: self)
+            
+            self.perform(#selector(search), with: nil, afterDelay: 2)
+
         }
     }
 
